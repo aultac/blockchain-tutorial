@@ -1,0 +1,24 @@
+.sumhashblock {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin: 0.5em;
+  border: 1px solid #CCCCCC;
+  border-radius: 10px;
+  background-color: #DDFFDD;
+}
+
+.sumhashblock-block {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #CCCCCC;
+  font-family: 'courier';
+  font-size: 1.1em;
+}
+
+.sumhashblock-row {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}

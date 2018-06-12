@@ -1,0 +1,88 @@
+import React, { Component } from 'react';
+import _ from 'lodash';
+
+import { connect } from '@cerebral/react';
+import { state,signal } from 'cerebral/tags';
+
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import TextField from '@material-ui/core/TextField'
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
+import './App.css';
+
+export default connect({
+    mainstr: state`mainstr`,
+  hashwidth: state`hashwidth`,
+  updateMainString: signal`updateMainString`,
+   updateHashWidth: signal`updateHashWidth`,
+}, function App(props) {
+  const renderStringRows = () => {
+    const stringrows = [];
+    for(let i=0; i<props.mainstr.length; i+=+(props.hashwidth)) {
+      stringrows[Math.floor(i/props.hashwidth)] = props.mainstr.substr(i,props.hashwidth);
+    }
+    console.log('stringrows = ', stringrows);
+    return _.map(stringrows, (r,ri) => 
+      <TableRow key={`hashtablerow${ri}`}>
+        {_.map(r, (c,ci) => <TableCell key={`hashtablerow${ri}col${ci}`}>{c}</TableCell>)}
+      </TableRow>
+    );
+  };
+
+  const renderHeaderCells = () => {
+    const ret  = Array(props.hashwidth);
+    for(let i=0; i<props.hashwidth; i++) {
+      ret[i] = <TableCell key={'hashtableheader'+i}>{i}</TableCell>;
+    }
+    return ret;
+  };
+
+
+  return (
+    <div className="App">
+
+      <AppBar position="static" color="default">
+        <Toolbar>
+          <Typography variant="title" color="inherit">
+            # Hashing and Blockchain Tutorial
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Card>
+        <CardContent>
+          <TextField style={{width: '90%' }}
+            multiline 
+            value={props.mainstr}
+            onChange={evt => props.updateMainString({ val: evt.target.value })}
+          />
+        </CardContent>
+      </Card>
+
+      <TextField 
+        label='Hash Width' 
+        type='number' 
+        value={props.hashwidth} 
+        onChange={evt => props.updateHashWidth({ val: evt.target.value })}
+      />
+
+      <Table style={{width: '80%'}}>
+        <TableHead>
+          <TableRow>{renderHeaderCells}</TableRow>
+        </TableHead>
+        <TableBody>
+          {renderStringRows()}
+        </TableBody>
+      </Table>
+
+    </div>
+  );
+});

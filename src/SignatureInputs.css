@@ -1,0 +1,32 @@
+.signatureinputs {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin: 0.5em;
+  border: 1px solid #CCCCCC;
+  box-shadow: 2px 2px #CCCCCC;
+  font-family: 'Roboto', sans-serif;
+}
+
+.signatureinputs-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.signatureinputs-pubkey {
+  flex-grow: 1;
+  border: 1px solid #CCCCCC;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  margin-right: 10px;
+  box-shadow: 1px 1px;
+  background-color: #F7F7FF;
+}
+
+.signatureinputs-savedkeyscontainer {
+  display: flex;
+  flex-direction: column;
+}

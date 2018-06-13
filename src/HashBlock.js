@@ -4,13 +4,10 @@ import _ from 'lodash';
 import { connect } from '@cerebral/react';
 import { state,signal } from 'cerebral/tags';
 
-import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
 import TextField from '@material-ui/core/TextField'
-import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
 
-import './SumHashBlock.css'
+import './HashBlock.css'
 
 
 function leadingSpacesTrailingSpace(str) {
@@ -21,17 +18,32 @@ function leadingSpacesTrailingSpace(str) {
 
 export default connect({
       peers: state`peers`,
+    hashalg: state`hashalg`,
   hashwidth: state`hashwidth`,
+   showwork: state`showwork`,
    updateMainString: signal`updateMainString`,
-}, function SumHashBlock(props) {
+          mineBlock: signal`mineBlock`,
+}, function HashBlock(props) {
   const {peerindex,blockindex} = props;
+  const hashalg = props.hashalg;
   const peer = props.peers[peerindex];
   const block = peer.blocks[blockindex];
+  const {mainstr,hashstr,nonce} = block;
+  const hashinfo = block.hashinfo; // might not be there for sha
   const hashwidth = +(props.hashwidth);
-  const {mainstr,hashinfo} = block;
-  const {sblocks,nblocks,hashnum,hashstr} = hashinfo;
+  let sblocks,nblocks,hashnum,blocknum = '';
+  if (hashalg === 'SumHash') {
+     sblocks = hashinfo.sblocks;
+     nblocks = hashinfo.nblocks;
+     hashnum = hashinfo.hashnum;
+    blocknum = hashinfo.blocknum;
+  }
+  const hashgood = hashstr.substr(0,4) === '0000';
+
   return (
-    <div className="sumhashblock" style={{width: (hashwidth*2.3)+'em'}}>
+    <div className={'hashblock '+(props.showwork && !hashgood ? 'hashblock-bad' : '')} 
+         style={{width: (hashwidth*2.3)+'em'}}
+    >
 
       <TextField style={{width: '100%', paddingLeft: '5px', backgroundColor: '#FFFFFF'}}
         multiline 
@@ -39,36 +51,76 @@ export default connect({
         onChange={evt => props.updateMainString({ val: evt.target.value, blockindex, peerindex })}
       />
 
-      <div className="sumhashblock-block">
-        {_.map(sblocks, (s,i) => 
-          <pre key={`shbs${i}`} className='sumhashblock-row'>
-              {'  '}{ _.map(s.replace(/\n/g,'^').replace(/ /g,'_'), leadingSpacesTrailingSpace) }
-          </pre>
-        )}
+      { /* Show previous if chained together (i.e. more than 1 block) */ }
+      {  blockindex < 1
+       ? ''
+       : <div className='hashstr'>
+           Previous: {peer.blocks[blockindex-1].hashstr}
+         </div>
+      }
+
+      { /* SumHash showsinternal digits and sums if enabled */ }
+      {  hashalg === 'SumHash' 
+       ? <div>
+           <div className="hashblock-block">
+             { /* Rows of characters, split up into 3-char cells */ }
+             {_.map(sblocks, (s,i) => 
+               <pre key={`shbs${i}`} className='hashblock-row'>
+                   {'  '}{ _.map(s.replace(/\n/g,'^').replace(/ /g,'_'), leadingSpacesTrailingSpace) }
+               </pre>
+             )}
+           </div>
+
+           <div className="hashblock-block">
+             { /* Rows of 3-digit numbers with + on front */ }
+             {_.map(nblocks, (r,i) => 
+               <pre key={`htp${i}`} className='hashblock-row'>
+                 {i>0 ? '+ ' : '  '}{_.map(r, (c,i) => (i+1)%3 ? c : (c+' '))}
+               </pre>
+             )}
+             { /* Row of dashes ----- prior to pre-nonce total */ }
+             <pre className='hashblock-row'>
+               -{_.map(Array(hashwidth), h => '----')}
+             </pre>
+             { /* Single row of final sum total before nonce */ }
+             <pre className='hashblock-row'>
+               {'  '}{_.map(blocknum, (c,i) => (i+1)%3 ? c : (c+' '))}
+             </pre>
+           </div>
+         </div>
+       : ''
+      }
+
+      { /* If work is enabled, then show the nonce  */ }
+      {  !props.showwork
+       ? ''
+       : <div className='hashstr'>
+           Guess to start hash with "0000":<br/> {nonce || '0'}
+         </div>
+      }
+
+      { /* If work is enabled AND this is SumHash, show final nonce total */ }
+      {  props.showwork && hashalg === 'SumHash'
+       ? <div className="hashblock-block">
+           <pre className='hashblock-row'>
+             {'  '}{_.map(hashnum, (c,i) => (i+1)%3 ? c : (c+' '))}
+           </pre>
+         </div>
+       : ''
+      }
+ 
+      <div className='hashstr'>
+        {props.hashalg}: {hashstr}
       </div>
 
-      <div className="sumhashblock-block">
-        {_.map(nblocks, (r,i) => 
-          <pre key={`htp${i}`} className='sumhashblock-row'>
-            {i ? '+ ' : '  '}{r.join(' ')}
-          </pre>
-        )}
-        <pre className='sumhashblock-row'>
-          -{_.map(Array(hashwidth), h => '----')}
-        </pre>
-        <pre className='sumhashblock-row'>
-          {'  '}{_.map(hashnum, (c,i) => (i+1)%3 ? c : (c+' '))}
-        </pre>
-      </div>
-
-       <Card>
-        <CardContent style={{paddingBottom: '0.5em', paddingTop: '0.5em'}}>
-          <Typography component="pre" style={{ fontFamily: 'courier', textAlign: 'left' }}>
-            Hash: {hashstr}
-          </Typography>
-        </CardContent>
-      </Card>
-
+      {  !props.showwork
+       ? ''
+       : <Button color='primary' variant='contained'
+           onClick={() => props.mineBlock({peerindex, blockindex})}
+         >
+           Mine
+         </Button>
+      }
  
     </div>
   );

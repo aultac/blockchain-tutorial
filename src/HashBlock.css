@@ -1,4 +1,4 @@
-.sumhashblock {
+.hashblock {
   display: flex;
   flex-direction: column;
   padding: 1em;
@@ -6,9 +6,15 @@
   border: 1px solid #CCCCCC;
   border-radius: 10px;
   background-color: #DDFFDD;
+  box-shadow: 2px 2px #CCCCCC;
 }
 
-.sumhashblock-block {
+.hashblock-bad {
+  background-color: #FFDDDD;
+}
+
+
+.hashblock-block {
   margin-top: 5px;
   margin-bottom: 5px;
   padding-top: 5px;
@@ -18,7 +24,18 @@
   font-size: 1.1em;
 }
 
-.sumhashblock-row {
+.hashblock-row {
   margin-top: 0px;
   margin-bottom: 0px;
+}
+
+.hashstr {
+  margin-top: 1.0em;
+  padding-top: 1.0em;
+  padding-bottom: 1.0em;
+  padding-left: 1.0em;
+  padding-right: 1.0em;
+  background-color: white;
+  font-family: 'courier';
+  word-wrap: break-word;
 }

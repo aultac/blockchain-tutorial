@@ -7,10 +7,10 @@ import { state,signal } from 'cerebral/tags';
 import TextField from '@material-ui/core/TextField';
 import   AddIcon from '@material-ui/icons/Add';
 import    Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import    Switch from '@material-ui/core/Switch';
 
-import Peer from './Peer'
+import      Peer from './Peer'
+import Newspaper from './Newspaper'
+import SignatureInputs from './SignatureInputs'
 
 import './App.css';
 
@@ -20,21 +20,26 @@ export default connect({
        showwork: state`showwork`,
   shownewspaper: state`shownewspaper`,
     showpublish: state`showpublish`,
+       showsign: state`showsign`,
       hashwidth: state`hashwidth`,
         hashalg: state`hashalg`,
-   updateHashInfo: signal`updateHashInfo`,
-  updateHashWidth: signal`updateHashWidth`,
-    toggleHashAlg: signal`toggleHashAlg`,
-      toggleWidth: signal`toggleWidth`,
-       toggleWork: signal`toggleWork`,
-  toggleNewspaper: signal`toggleNewspaper`,
-    togglePublish: signal`togglePublish`,
-          addPeer: signal`addPeer`,
+       updateHashInfo: signal`updateHashInfo`,
+      updateHashWidth: signal`updateHashWidth`,
+        toggleHashAlg: signal`toggleHashAlg`,
+          toggleWidth: signal`toggleWidth`,
+           toggleWork: signal`toggleWork`,
+      toggleNewspaper: signal`toggleNewspaper`,
+        togglePublish: signal`togglePublish`,
+           toggleSign: signal`toggleSign`,
+         toggleVerify: signal`toggleVerify`,
+              addPeer: signal`addPeer`,
+  randomizePrivateKey: signal`randomizePrivateKey`,
 }, class App extends Component {
 
   componentWillMount() {
     const props = this.props;
     props.updateHashInfo(); // initialize
+    props.randomizePrivateKey();
   }
 
   render() {
@@ -64,25 +69,27 @@ export default connect({
             Switch to {props.hashalg === 'SHA-256' ? 'SumHash' : 'SHA-256'}
           </div>
 
-          <div className={'header-button ' + (props.shownewspaper ? 'header-button-down' : '')}
-            onClick={() => props.toggleNewspaper()}
-          >
+          <div className={'header-button ' + (props.shownewspaper ? 'header-button-down' : '')} onClick={() => props.toggleNewspaper()}>
             News
           </div>
 
-          <div className={'header-button ' + (props.showpublish ? 'header-button-down' : '')}
-            onClick={() => props.togglePublish() }
-          >
+          <div className={'header-button ' + (props.showpublish ? 'header-button-down' : '')} onClick={() => props.togglePublish() }>
             Publish
           </div>
-          
-          <div className={'header-button ' + (props.showwork ? 'header-button-down' : '')}
-            onClick={() => props.toggleWork()}
-          >
+
+          <div className={'header-button ' + (props.showsign ? 'header-button-down' : '')} onClick={() => props.toggleSign()}>
+            Sign
+          </div>
+
+          <div className={'header-button ' + (props.showwork ? 'header-button-down' : '')} onClick={() => props.toggleWork()}>
             Work
           </div>
 
         </div>
+        
+        { props.shownewspaper ? <Newspaper />       : '' }
+
+        { props.showsign      ? <SignatureInputs /> : '' }
 
         { /* Render all the peers now: */ }
         {_.map(props.peers, (peer,peerindex) => <Peer peerindex={peerindex} key={'p'+peerindex} />) }

@@ -4,7 +4,6 @@
   padding: 1em;
   margin: 0.5em;
   border: 1px solid #CCCCCC;
-  border-radius: 10px;
   background-color: #DDFFDD;
   box-shadow: 2px 2px #CCCCCC;
 }
@@ -22,6 +21,8 @@
   border-bottom: 1px solid #CCCCCC;
   font-family: 'courier';
   font-size: 1.1em;
+  max-height: 8em;
+  overflow-y: scroll;
 }
 
 .hashblock-row {
@@ -38,4 +39,13 @@
   background-color: white;
   font-family: 'courier';
   word-wrap: break-word;
+}
+
+.hashstr-good {
+  color: #00BB00;
+}
+
+.hashstr-bad {
+  color: #BB0000;
+  font-weight: bold;
 }

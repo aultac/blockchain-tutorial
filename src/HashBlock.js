@@ -17,18 +17,21 @@ function leadingSpacesTrailingSpace(str) {
 }
 
 export default connect({
-      peers: state`peers`,
-    hashalg: state`hashalg`,
-  hashwidth: state`hashwidth`,
-   showwork: state`showwork`,
+       peers: state`peers`,
+     hashalg: state`hashalg`,
+   hashwidth: state`hashwidth`,
+    showwork: state`showwork`,
+    showsign: state`showsign`,
+  showverify: state`showsign`,
    updateMainString: signal`updateMainString`,
           mineBlock: signal`mineBlock`,
+          signBlock: signal`signBlock`,
 }, function HashBlock(props) {
   const {peerindex,blockindex} = props;
   const hashalg = props.hashalg;
   const peer = props.peers[peerindex];
   const block = peer.blocks[blockindex];
-  const {mainstr,hashstr,nonce} = block;
+  const {mainstr,hashstr,nonce,signature,signatureValid} = block;
   const hashinfo = block.hashinfo; // might not be there for sha
   const hashwidth = +(props.hashwidth);
   let sblocks,nblocks,hashnum,blocknum = '';
@@ -50,6 +53,14 @@ export default connect({
         value={mainstr}
         onChange={evt => props.updateMainString({ val: evt.target.value, blockindex, peerindex })}
       />
+
+      { /* Show signature if signed */ }
+      {  props.showsign
+       ? <div className={'hashstr '+(signatureValid ? 'hashstr-good' : 'hashstr-bad')}>
+           Signature: {signature}
+         </div>
+       : ''
+      }
 
       { /* Show previous if chained together (i.e. more than 1 block) */ }
       {  blockindex < 1
@@ -113,14 +124,25 @@ export default connect({
         {props.hashalg}: {hashstr}
       </div>
 
-      {  !props.showwork
-       ? ''
-       : <Button color='primary' variant='contained'
-           onClick={() => props.mineBlock({peerindex, blockindex})}
-         >
-           Mine
-         </Button>
-      }
+      <div style={{display: 'flex', flexDirection: 'row', width: '100%', flexGrow: 1}}>
+        {  !props.showsign
+         ? ''
+         : <Button color='primary' variant='contained' style={{flexGrow: 1, margin: '5px 5px 5px 5px' }}
+             onClick={() => props.signBlock({peerindex, blockindex})}
+           >
+             Sign
+           </Button>
+        }
+ 
+        {  !props.showwork
+         ? ''
+         : <Button color='primary' variant='contained' style={{flexGrow: 1, margin: '5px 5px 5px 5px' }}
+             onClick={() => props.mineBlock({peerindex, blockindex})}
+           >
+             Mine
+           </Button>
+        }
+      </div>
  
     </div>
   );

@@ -1,4 +1,7 @@
 .App {
+  overflow: scroll;
+  display: flex;
+  flex-grow: 1;
 }
 
 .header-bar {

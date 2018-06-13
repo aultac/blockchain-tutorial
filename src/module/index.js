@@ -11,6 +11,11 @@ export default Module({
     showwork: false,
     shownewspaper: false,
     showpublish: false,
+    showsign: false,
+    newspaper: '',
+    privkey: '1234567',
+    pubkey: '',
+    savedPubkeys: [],
     peers: [
       {
         blocks: [
@@ -18,6 +23,8 @@ export default Module({
             mainstr: 'GTIN: 1234567\nCountryOfOrigin: USA\nProduct: peaches',
             hashstr: '',
             nonce: 0,
+            signature: '',
+            signatureValid: false,
             hashinfo: {
               sblocks: [],  // each row is row of original chars
               nblocks: [],  // each row is numeric equivalent of original chars

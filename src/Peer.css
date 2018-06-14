@@ -6,6 +6,7 @@
   margin: 1em 1em 1em 1em;
   background-color: #F7F7FF;
   box-shadow: 2px 2px #CCCCCC;
+  overflow-y: scroll;
 }
 
 .peernode-chain {

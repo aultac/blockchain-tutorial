@@ -27,7 +27,6 @@ function hashBlock({hashwidth,hashalg,prev,block}) {
 
   if (hashalg === 'SHA-256') {
     mainstr += block.nonce.toString();
-//console.log('Hash for mainstr = ', mainstr, ' = ', SHA256(mainstr).toString());
     return {
       hashinfo: {},
       hashstr: SHA256(mainstr).toString(),
@@ -57,9 +56,6 @@ function hashBlock({hashwidth,hashalg,prev,block}) {
   blocksum = BigInt(blocksum.toString(10).substr(-hashwidth*3));
   // Add the nonce
   let noncesum = blocksum.add(BigInt(block.nonce));
-//console.log('Adding nonce '+block.nonce);
-//console.log(' to blocksum  '+blocksum.toString(10));
-//console.log('    and got   '+noncesum.toString(10));
   // lop off left-most bits again
   noncesum = BigInt(noncesum.toString(10).substr(-hashwidth*3));
 
@@ -85,14 +81,10 @@ export const updateHashInfo = sequence('updateHashInfo', [
     _.each(peers, (peer,peerindex) => {
       // If peerindex is in props, only update that peer's blocks
       if (typeof props.peerindex !== 'undefined' && props.peerindex !== peerindex) return;
-//console.log('--------------------------------------------------------');
-//console.log('Updating peer '+peerindex);
       // always update all blocks on peer
       _.each(peer.blocks, (block,blockindex) => {
         const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
-//console.log('Hashing block '+blockindex+': nonce = '+block.nonce+', prev = '+prev+', before_hashstr = ',block.hashstr);
         const {hashinfo,hashstr} = hashBlock({block,hashalg,hashwidth,prev});
-//console.log('Done hashing block '+blockindex+': nonce = '+block.nonce+', hashstr = ', hashstr);
 
         block.hashstr = hashstr; // update our local copy outside of state for next loop iteration's 'prev' request
         state.set(`peers.${peerindex}.blocks.${blockindex}.hashinfo`, hashinfo);
@@ -117,8 +109,6 @@ export const mineBlock = sequence('mineBlock', [
     } else {
       block.nonce = '0';
     }
-//console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++');
-//console.log('Mining block '+blockindex+', starting nonce = ', block.nonce);
 
     let hashstr = block.hashstr;
     const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
@@ -132,10 +122,8 @@ export const mineBlock = sequence('mineBlock', [
       });
       hashstr = result.hashstr;
     }
-//console.log('Done mining block '+blockindex+', setting nonce = '+block.nonce+', hashstr = ',hashstr);
     state.set(`peers.${peerindex}.blocks.${blockindex}.nonce`  , block.nonce);
     state.set(`peers.${peerindex}.blocks.${blockindex}.hashstr`, hashstr);
-//console.log('After mining, calling updateHashInfo');
   },
   updateHashInfo,
 ]);

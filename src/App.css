@@ -2,6 +2,8 @@
   overflow: scroll;
   display: flex;
   flex-grow: 1;
+  min-width: 1024px;
+  overflow-y: scroll;
 }
 
 .header-bar {
@@ -27,3 +29,20 @@
   background-color: rgba(200,200,200,0.4);
 }
 
+.footer-bar {
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid #CCCCCC;
+  margin-top: 10px;
+  padding-top: 10px;
+  background-color: white;
+  font-size: 0.8em;
+  font-family: 'Roboto', sans-serif;
+}
+
+.footer-bar-element {
+  flex-grow: 1;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+}

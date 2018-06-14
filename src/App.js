@@ -100,6 +100,22 @@ export default connect({
           <AddIcon/>
         </Button>
 
+        <div className='footer-bar'>
+          <div className='footer-bar-element'>
+            License:<br/>Apache 2.0
+          </div>
+          <div className='footer-bar-element'>
+            Github:<br/><a href='https://github.com/aultac/blockchain-tutorial'>{'https://github.com/aultac/blockchain-tutorial'}</a>
+          </div>
+          <div className='footer-bar-element'>
+            Live:<br/> <a href='https://aultac.github.io/blockchain-tutorial'>{'https://aultac.github.io/blockchain-tutorial'}</a>
+          </div>
+          <div className='footer-bar-element'>
+            Many thanks to Anders Brownworth for his<br/> excellent blockchain demo that inspired this one: <br/>
+            <a href='https://anders.com/blockchain/'>{'https://anders.com/blockchain/'}</a>
+          </div>
+        </div>
+
       </div>
     );
   }

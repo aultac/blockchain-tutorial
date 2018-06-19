@@ -47,6 +47,7 @@ export default connect({
         )}
 
         <Button variant='fab' color='primary' aria-label='Add Block'
+          style={{ flexShrink: 0 }}
           onClick={() => props.addBlock({peerindex})}
         >
           <AddIcon/>

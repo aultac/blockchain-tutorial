@@ -9,10 +9,19 @@ import './Newspaper.css'
 
 export default connect({
   newspaper: state`newspaper`,
+  peers: state`peers`,
 
 }, function Newspaper(props) {
+
+  // Check the hash on the end of peer 0: if it doesn't match published, 
+  // highlight in red
+  let hashValid = false;
+  if (props && props.peers && props.peers[0] && props.peers[0].blocks && props.peers[0].blocks[0]) {
+    hashValid = props.peers[0].blocks[0].hashstr === props.newspaper;
+  }
+
   return (
-    <div className='newspaper'>
+    <div className={'newspaper '+ (hashValid ? 'newspaper-match' : 'newspaper-nomatch') }>
       <div className='newspaper-title'>
         Wall Street Journal
       </div>

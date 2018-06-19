@@ -26,3 +26,12 @@
   white-space: normal;
   word-wrap: break-word
 }
+
+.newspaper-nomatch {
+  border: solid 3px red;
+}
+
+.newspaper-match {
+  border: solid 1px green;
+}
+

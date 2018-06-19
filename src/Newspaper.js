@@ -16,8 +16,9 @@ export default connect({
   // Check the hash on the end of peer 0: if it doesn't match published, 
   // highlight in red
   let hashValid = false;
-  if (props && props.peers && props.peers[0] && props.peers[0].blocks && props.peers[0].blocks[0]) {
-    hashValid = props.peers[0].blocks[0].hashstr === props.newspaper;
+  if (props && props.peers && props.peers[0] && props.peers[0].blocks && props.peers[0].blocks.length > 0) {
+    const end = props.peers[0].blocks.length-1;
+    hashValid = props.peers[0].blocks[end].hashstr === props.newspaper;
   }
 
   return (

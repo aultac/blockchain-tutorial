@@ -24,6 +24,7 @@ export default connect({
     showsign: state`showsign`,
   showverify: state`showsign`,
    updateMainString: signal`updateMainString`,
+        updateNonce: signal`updateNonce`,
           mineBlock: signal`mineBlock`,
           signBlock: signal`signBlock`,
 }, function HashBlock(props) {
@@ -106,7 +107,10 @@ export default connect({
       {  !props.showwork
        ? ''
        : <div className='hashstr'>
-           Guess to start hash with "0000":<br/> {nonce || '0'}
+           Guess to start hash with "0000":<br/> 
+           <TextField type='number' value={nonce || 0} style={{width: '100%'}}
+             onChange={evt => props.updateNonce({ val: evt.target.value, blockindex, peerindex })} 
+           />
          </div>
       }
 

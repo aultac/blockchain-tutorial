@@ -2,7 +2,6 @@ import _ from 'lodash';
 import BigInt from 'big-integer';
 import SHA256 from 'crypto-js/sha256';
 import Elliptic from 'elliptic';
-import Buffer from 'buffer';
 
 import { set, toggle } from 'cerebral/operators';
 import { state,props } from 'cerebral/tags';
@@ -255,6 +254,10 @@ export const updateMainString = sequence('updateMainString', [
 ]);
 export const  updateHashWidth = sequence('updateHashWidth' , [
   set(state`hashwidth`, props`val`),
+  updateHashInfo,
+]);
+export const updateNonce = sequence('updateNonce', [
+  ({state,props}) => state.set(`peers.${props.peerindex}.blocks.${props.blockindex}.nonce`, props.val),
   updateHashInfo,
 ]);
 export const updatePrivateKey = sequence('updatePrivateKey', [ 

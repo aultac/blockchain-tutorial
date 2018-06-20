@@ -94,7 +94,7 @@ export const updateHashInfo = sequence('updateHashInfo', [
 ]);
 
 
-const countupStep = 1023;
+const countupStep = 123;
 export const mineBlock = sequence('mineBlock', [
   ({state,props}) => {
     return new Promise((resolve,reject) => {

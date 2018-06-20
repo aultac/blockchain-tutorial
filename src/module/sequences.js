@@ -94,9 +94,17 @@ export const updateHashInfo = sequence('updateHashInfo', [
 ]);
 
 
-const countupStep = 123;
+const countupStepInitial = 123; // completely arbitrarily chosen, but seems to work.
 export const mineBlock = sequence('mineBlock', [
   ({state,props}) => {
+
+    // We need to return a promise here because we want the screen to refresh as we count
+    // up the nonce.  We don't have the processing power to update on every hash.
+    // We want the "animation" to reflect the amount of work being done, but in the case someone
+    // has a really long running hash search, we don't want to waste so much time displaying.
+    // So, we recursively keep calling our function after pushing to the end of the event queue,
+    // and we'll only update after a certain number of hashes have been tried.  We'll exponentially
+    // increase that "step" size as we go also, so a 271k+ hash search finishes in a few seconds.
     return new Promise((resolve,reject) => {
       const {peerindex,blockindex} = props;
       const peer = state.get(`peers.${peerindex}`);
@@ -112,11 +120,10 @@ export const mineBlock = sequence('mineBlock', [
         block.nonce = '0';
       }
   
-      let hashstr = block.hashstr;
+      let hashstr = ''; // force to run at least one hash
       const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
       function insideMineBlock() {
         let count = 0;
-        console.log('insideMineBlock: starting function');
         while (hashstr.substr(0,4) !== '0000') {
           block.nonce = BigInt(block.nonce).add(1).toString(10);
           let result = hashBlock({
@@ -126,25 +133,23 @@ export const mineBlock = sequence('mineBlock', [
             prev, 
           });
           hashstr = result.hashstr;
-          if (count++ > countupStep) {
-            console.log('insideMineBlock: continuing loop, count = ', count, ', nonce = ', block.nonce);
+          if (count++ > countupStepCurrent) {
             return false;
           }
         }
-        console.log('loop finished, hashstr = ', hashstr, ', nonce = ', block.nonce);
         return true;
       }
       function outerMineBlock() {
         const result = insideMineBlock();
         state.set(`peers.${peerindex}.blocks.${blockindex}.nonce`  , block.nonce);
         state.set(`peers.${peerindex}.blocks.${blockindex}.hashstr`, hashstr);
-        console.log('mineBlock: result = ', result);
         if (!result) {
-          console.log('mineBlock: setImmediate(insideMineBlock)');
+          countupStepCurrent *= 1.05;
           return setTimeout(outerMineBlock,0);
         }
         return resolve();
       }
+      let countupStepCurrent = countupStepInitial;
       return outerMineBlock();
     });
   },

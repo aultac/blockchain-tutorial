@@ -93,36 +93,60 @@ export const updateHashInfo = sequence('updateHashInfo', [
   },
 ]);
 
+
+const countupStep = 1023;
 export const mineBlock = sequence('mineBlock', [
   ({state,props}) => {
-    const {peerindex,blockindex} = props;
-    const peer = state.get(`peers.${peerindex}`);
-    const block = _.cloneDeep(peer.blocks[blockindex]);
-    const hashalg = state.get('hashalg');
-    let hashwidth = +(state.get('hashwidth')); // force it to be a number
-    if (hashwidth < 1) hashwidth = 1;
-    if (hashalg !== 'SHA-256') {
-      // initialize the nonce to the right thing (negative number with first 4 values)
-      const hashnum = block.hashinfo.hashnum;
-      block.nonce = BigInt('-'+hashnum).subtract(1).toString(10);
-    } else {
-      block.nonce = '0';
-    }
-
-    let hashstr = block.hashstr;
-    const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
-    while (hashstr.substr(0,4) !== '0000') {
-      block.nonce = BigInt(block.nonce).add(1).toString(10);
-      let result = hashBlock({
-        hashwidth,
-        hashalg,
-        block,
-        prev, 
-      });
-      hashstr = result.hashstr;
-    }
-    state.set(`peers.${peerindex}.blocks.${blockindex}.nonce`  , block.nonce);
-    state.set(`peers.${peerindex}.blocks.${blockindex}.hashstr`, hashstr);
+    return new Promise((resolve,reject) => {
+      const {peerindex,blockindex} = props;
+      const peer = state.get(`peers.${peerindex}`);
+      const block = _.cloneDeep(peer.blocks[blockindex]);
+      const hashalg = state.get('hashalg');
+      let hashwidth = +(state.get('hashwidth')); // force it to be a number
+      if (hashwidth < 1) hashwidth = 1;
+      if (hashalg !== 'SHA-256') {
+        // initialize the nonce to the right thing (negative number with first 4 values)
+        const hashnum = block.hashinfo.hashnum;
+        block.nonce = BigInt('-'+hashnum).subtract(1).toString(10);
+      } else {
+        block.nonce = '0';
+      }
+  
+      let hashstr = block.hashstr;
+      const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
+      function insideMineBlock() {
+        let count = 0;
+        console.log('insideMineBlock: starting function');
+        while (hashstr.substr(0,4) !== '0000') {
+          block.nonce = BigInt(block.nonce).add(1).toString(10);
+          let result = hashBlock({
+            hashwidth,
+            hashalg,
+            block,
+            prev, 
+          });
+          hashstr = result.hashstr;
+          if (count++ > countupStep) {
+            console.log('insideMineBlock: continuing loop, count = ', count, ', nonce = ', block.nonce);
+            return false;
+          }
+        }
+        console.log('loop finished, hashstr = ', hashstr, ', nonce = ', block.nonce);
+        return true;
+      }
+      function outerMineBlock() {
+        const result = insideMineBlock();
+        state.set(`peers.${peerindex}.blocks.${blockindex}.nonce`  , block.nonce);
+        state.set(`peers.${peerindex}.blocks.${blockindex}.hashstr`, hashstr);
+        console.log('mineBlock: result = ', result);
+        if (!result) {
+          console.log('mineBlock: setImmediate(insideMineBlock)');
+          return setTimeout(outerMineBlock,0);
+        }
+        return resolve();
+      }
+      return outerMineBlock();
+    });
   },
   updateHashInfo,
 ]);

@@ -6,13 +6,13 @@
   margin: 1em 1em 1em 1em;
   background-color: #F7F7FF;
   box-shadow: 2px 2px #CCCCCC;
-  overflow-y: scroll;
 }
 
 .peernode-chain {
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow-y: scroll;
 }
 
 .peernode-title {
@@ -20,6 +20,7 @@
   font-family: 'Roboto', sans-serif;
   font-weight: bold;
   color: #303AA5; 
+  margin-right: 1em;
 }
 
 .peernode-topbar {

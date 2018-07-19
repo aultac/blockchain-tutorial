@@ -23,6 +23,7 @@ export default connect({
     showwork: state`showwork`,
     showsign: state`showsign`,
   showreward: state`showreward`,
+    showrace: state`showrace`,
    updateMainString: signal`updateMainString`,
         updateNonce: signal`updateNonce`,
           mineBlock: signal`mineBlock`,
@@ -46,7 +47,7 @@ export default connect({
   const hashgood = hashstr ? hashstr.substr(0,4) === '0000' : false;
 
   return (
-    <div className={'hashblock '+(props.showwork && !hashgood ? 'hashblock-bad' : '')} 
+    <div className={'hashblock '+((props.showwork || props.showrace) && !hashgood ? 'hashblock-bad' : '')} 
          style={{width: (hashwidth*2.3)+'em'}}
     >
 

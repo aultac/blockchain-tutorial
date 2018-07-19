@@ -13,6 +13,7 @@ export default Module({
     showsign: false,
     showreward: false,
     showrace: false,
+    showcheat: false,
     raceIsOn: false,
     newspaper: '',
     privkey: '1234567',

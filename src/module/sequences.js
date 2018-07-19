@@ -119,6 +119,11 @@ const mineOneBlock = ({props,state}) => new Promise((resolve,reject) => {
     block.nonce = BigInt('-'+hashnum).subtract(1).toString(10);
   } else {
     if (!block.nonce) block.nonce = '0'; // keep any previously-reached nonce
+    // Now add a randomly-generated offset to gameify the racing a little better
+    if (state.get(`raceIsOn`)) {
+      block.nonce = (+block.nonce) + Math.round(Math.random()*100000); 
+      block.nonce = '' + block.nonce; // back to string
+    }
   }
   let countupStepCurrent = peer.initialPauseRate;
 
@@ -375,7 +380,10 @@ export const addPeer = sequence('addPeer', [
 //   but next round of peerMiner will make one to fill the void.  Peer miner might do that in the middle of
 //   publish, however.
 // 
-const lengthOfValidChain = blocks => _.find(blocks, b => b.hashstr.substr(0,4) !== '0000') || blocks.length;
+const lengthOfValidChain = blocks => {
+  const i = _.findIndex(blocks, b => b.hashstr.substr(0,4) !== '0000');
+  return (i<0 ? blocks.length : i); // if we don't find a bad one, entire chain is valid
+}
 const publishChainAction = ({props,state}) => {
   stopAllMiningWhilePublishing = true;
   const innerPublishChain  = function() {
@@ -386,18 +394,23 @@ const publishChainAction = ({props,state}) => {
       stopAllMiningWhilePublishing = false;
       return;
     }
-    // Otherwise, peers only accept if longest valid chain is longer than what they have
+    // Otherwise, peers only accept if longest valid chain is longer than what they have, and they aren't cheating
     const publishedChainLength = lengthOfValidChain(props.blocks); 
     // Compare with the longest valid length of each peer:
     _.each(peers, (p,i) => {
       if (i === props.peerindex) return; // don't need to publish to ourself
-      const peerChainLength = lengthOfValidChain
+      const peerChainLength = lengthOfValidChain(p.blocks);
       if (publishedChainLength <= peerChainLength) {
         state.push(`msgs`, { type: 'bad', time: moment(), text: `Peer ${i} rejects chain from peer ${props.peerindex}: valid chain is too short.` });
         return;
-      } 
+      }
+      if (p.isCheating) {
+        state.push(`msgs`, { type: 'bad', time: moment(), text: `Peer ${i} rejects chain from peer ${props.peerindex}: trying to cheat!` });
+        return;
+      }
       // Otherwise, accept the new blocks for this peer
       state.push(`msgs`, { type: 'good', time: moment(), text: `Peer ${i} accepts chain from peer ${props.peerindex}.` });
+console.log('setting peer '+i+' from peer '+props.peerindex);
       state.set(`peers.${i}.blocks`, _.cloneDeep(props.blocks));
     });
     stopAllMiningWhilePublishing = false;
@@ -415,6 +428,12 @@ export const publishNode = sequence('publishNode', [
     return { blocks: peer.blocks, publishWithValidityChecks: false }; // setup for publishChain to publish to peers
   },
   publishChain,
+]);
+export const setPeerIsCheating = sequence('setPeerIsCheating', [
+  ({state,props}) => {
+console.log('setting isCheating = ', props);
+    state.set(`peers.${props.peerindex}.isCheating`, props.checked);
+  },
 ]);
 
 
@@ -456,6 +475,7 @@ export const togglePublish   = sequence('togglePublish',   [ toggle(state`showpu
 export const toggleSign      = sequence('toggleSign',      [ toggle(state`showsign`)      ]);
 export const toggleReward    = sequence('toggleReward',    [ toggle(state`showreward`)    ]);
 export const toggleRace      = sequence('toggleRace',      [ toggle(state`showrace`)      ]);
+export const toggleCheat     = sequence('toggleCheat',     [ toggle(state`showcheat`)     ]);
 export const toggleHashAlg   = sequence('toggleHashAlg',   [ 
   ({state}) => state.set(`hashalg`, state.get('hashalg') === 'SHA-256' ? 'SumHash' : 'SHA-256'),
   resetAllNonces,

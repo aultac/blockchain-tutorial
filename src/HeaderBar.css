@@ -1,0 +1,24 @@
+.header-bar {
+  display: flex;
+  flex-direction: row;
+  background-color: #303AA5;
+  padding: 0.5em;
+  color: white;
+  font-size: 1.5em;
+  font-family: 'Roboto', sans-serif;
+}
+
+.header-button {
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  border-left: solid 1px #DDDDDD;
+  border-right: solid 1px #DDDDDD;
+  user-select: none;
+}
+
+.header-button-down {
+  background-color: rgba(200,200,200,0.4);
+}
+
+

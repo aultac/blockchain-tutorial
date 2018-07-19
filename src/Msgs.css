@@ -1,0 +1,29 @@
+.msgs {
+  display: flex;
+  flex-direction: row;
+  padding: 1em;
+  margin: 0.5em;
+  border: 1px solid #CCCCCC;
+  box-shadow: 2px 2px #CCCCCC;
+  font-family: 'Roboto', sans-serif;
+  overflow-x: scroll;
+}
+
+.msgs-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  margin-left: 1em;
+  margin-right: 1em;
+  flex-shrink: 0;
+}
+
+.msgs-good {
+  color: #00BB00;
+}
+
+.msgs-bad {
+  color: #BB0000;
+  font-weight: bold;
+}
+

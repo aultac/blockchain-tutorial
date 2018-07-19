@@ -21,7 +21,7 @@
   border-bottom: 1px solid #CCCCCC;
   font-family: 'courier';
   font-size: 1.1em;
-  max-height: 8em;
+  max-height: 4em;
   overflow-y: scroll;
 }
 
@@ -39,6 +39,7 @@
   background-color: white;
   font-family: 'courier';
   word-wrap: break-word;
+  flex-grow: 1;
 }
 
 .hashstr-good {

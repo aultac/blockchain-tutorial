@@ -14,24 +14,30 @@ import './Peer.css';
 export default connect({
         peers: state`peers`,
   showpublish: state`showpublish`,
-     addBlock: signal`addBlock`,
-  publishNode: signal`publishNode`,
+   showreward: state`showreward`,
+          addBlock: signal`addBlock`,
+       publishNode: signal`publishNode`,
+  togglePeerMining: signal`togglePeerMining`,
 }, function Peer(props) {
   const {peerindex} = props;
   const peer = props.peers[peerindex];
+  // Add up the bounty's of all the blocks we've mined
+  const balance = _.reduce(peer.blocks, (sum,b) => sum + (b.winner && b.winner.peerindex === peerindex ? +(b.bounty) : 0),0);
 
   return (
     <div className='peernode'>
       <div className='peernode-topbar'>
-        {  peerindex > 0 
+        {  props.peers.length > 1 || props.showreward
          ? <div className='peernode-title'>
-             Peer {peerindex}
+             Peer {peerindex} &nbsp;
+             {  props.showreward 
+              ? '(Public Key: ' + peer.wallet.key.pub.substr(0,5) + '...' + peer.wallet.key.pub.substr(-5) + '): ' + balance + ' btc' : '' }
            </div>
          : ''
         }
         <div style={{flexGrow:1}}></div>
         {  props.showpublish
-         ? <Button variant='contained' color='primary' onClick={() => props.publishNode({ peerindex })}>
+         ? <Button variant='contained' color='primary' onClick={() => props.publishNode({ peerindex })} style={{ marginRight: '5px' }}>
              Publish
            </Button>
          : ''

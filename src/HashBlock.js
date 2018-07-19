@@ -22,7 +22,7 @@ export default connect({
    hashwidth: state`hashwidth`,
     showwork: state`showwork`,
     showsign: state`showsign`,
-  showverify: state`showsign`,
+  showreward: state`showreward`,
    updateMainString: signal`updateMainString`,
         updateNonce: signal`updateNonce`,
           mineBlock: signal`mineBlock`,
@@ -35,6 +35,7 @@ export default connect({
   const {mainstr,hashstr,nonce,signature,signatureValid} = block;
   const hashinfo = block.hashinfo; // might not be there for sha
   const hashwidth = +(props.hashwidth);
+  const winner = block.winner || false;
   let sblocks,nblocks,hashnum,blocknum = '';
   if (hashalg === 'SumHash') {
      sblocks = hashinfo.sblocks;
@@ -42,14 +43,14 @@ export default connect({
      hashnum = hashinfo.hashnum;
     blocknum = hashinfo.blocknum;
   }
-  const hashgood = hashstr.substr(0,4) === '0000';
+  const hashgood = hashstr ? hashstr.substr(0,4) === '0000' : false;
 
   return (
     <div className={'hashblock '+(props.showwork && !hashgood ? 'hashblock-bad' : '')} 
          style={{width: (hashwidth*2.3)+'em'}}
     >
 
-      <TextField style={{width: '100%', paddingLeft: '5px', backgroundColor: '#FFFFFF'}}
+      <TextField style={{width: '100%', paddingLeft: '5px', backgroundColor: '#FFFFFF' }}
         multiline 
         value={mainstr}
         onChange={evt => props.updateMainString({ val: evt.target.value, blockindex, peerindex })}
@@ -125,8 +126,18 @@ export default connect({
       }
  
       <div className='hashstr'>
-        {props.hashalg}: {hashstr}
+        {props.hashalg === 'SumHash' ? 'SumHash: ' : ''}{hashstr}
       </div>
+
+      {  !props.showreward
+       ? ''
+       : <div className='hashstr'>
+           Bounty: { block.bounty }btc
+           { winner ? <div>&nbsp;&nbsp;&nbsp;Winner: Peer {winner.peerindex}</div> : '' }
+           { winner ? <div>Signature: {winner.signature.substr(0,5) + '...' + winner.signature.substr(-5)}</div> : '' }
+           { winner ? <div>&nbsp;&nbsp;&nbsp;PubKey:  {winner.key.pub.substr(0,5) + '...' + winner.key.pub.substr(-5)}</div> : '' }
+         </div>
+      }
 
       <div style={{display: 'flex', flexDirection: 'row', width: '100%', flexGrow: 1}}>
         {  !props.showsign
@@ -146,6 +157,7 @@ export default connect({
              Mine
            </Button>
         }
+
       </div>
  
     </div>

@@ -11,12 +11,14 @@ import      Peer from './Peer'
 import Newspaper from './Newspaper'
 import SignatureInputs from './SignatureInputs'
 import HeaderBar from './HeaderBar'
+import      Msgs from './Msgs'
 
 import './App.css';
 
 export default connect({
           peers: state`peers`,
        showrace: state`showrace`,
+      showcheat: state`showcheat`,
        raceIsOn: state`raceIsOn`,
   shownewspaper: state`shownewspaper`,
        showsign: state`showsign`,
@@ -41,6 +43,10 @@ export default connect({
           <Button color='primary' aria-label='Toggle Race' onClick={() => props.raceIsOn ? props.stopRace() : props.startRace()}>
             { props.raceIsOn ? 'Stop Race' : 'Start Race' }
           </Button>
+        }
+
+        { !props.showcheat ? '' :
+          <Msgs />
         }
 
         { props.shownewspaper ? <Newspaper />       : '' }

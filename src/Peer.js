@@ -25,12 +25,22 @@ export default connect({
   setPeerIsCheating: signal`setPeerIsCheating`,
 }, class Peer extends React.Component {
 
+  componentWillMount() {
+    const peerindex = this.props.peerindex;
+    this.chainLengthLastScrollUpdate = this.props.peers[peerindex].blocks.length || 0;
+  }
+
   // Keep ourself scrolled to left as new blocks show up
   componentDidUpdate() {
-    const scrollWidth = this.chainDiv.scrollWidth;
-    const visibleWidth = this.chainDiv.offsetWidth;
-    const diff = scrollWidth - visibleWidth;
-    this.chainDiv.scrollLeft = (diff < 0 ? 0 : diff);
+    const peerindex = this.props.peerindex;
+    const lengthNow = this.props.peers[peerindex].blocks.length;
+    if (lengthNow  !== this.chainLengthLastScrollUpdate) {
+      const scrollWidth = this.chainDiv.scrollWidth;
+      const visibleWidth = this.chainDiv.offsetWidth;
+      const diff = scrollWidth - visibleWidth;
+      this.chainDiv.scrollLeft = (diff < 0 ? 0 : diff);
+      this.chainLengthLastScrollUpdate = lengthNow;
+    }
   }
 
   render() {

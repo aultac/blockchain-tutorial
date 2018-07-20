@@ -125,7 +125,7 @@ const mineOneBlock = ({props,state}) => new Promise((resolve,reject) => {
       block.nonce = '' + block.nonce; // back to string
     }
   }
-  let countupStepCurrent = peer.initialPauseRate;
+  let countupStepCurrent = peer.initialPauseRate * peer.processingPower;
 
   let hashstr = ''; // force to run at least one hash
   const prev = blockindex < 1 ? '' : peer.blocks[blockindex-1].hashstr;
@@ -345,6 +345,7 @@ const makeNewPeer = () => ({
   blocks: [], 
   wallet: { key: {} },
   initialPauseRate: 123,
+  processingPower: 1,
 });
 export const addPeer = sequence('addPeer', [
   ({state,props}) => {
@@ -480,6 +481,9 @@ export const toggleHashAlg   = sequence('toggleHashAlg',   [
   ({state}) => state.set(`hashalg`, state.get('hashalg') === 'SHA-256' ? 'SumHash' : 'SHA-256'),
   resetAllNonces,
   updateHashInfo,
+]);
+export const updateProcessingPower = sequence('updateProcessingPower', [
+  ({state,props}) => state.set(`peers.${props.peerindex}.processingPower`, +(props.value)),
 ]);
 export const init = [
   set(state`peers.0.blocks.0.mainstr`, randomLabel()),

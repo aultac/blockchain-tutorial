@@ -23,6 +23,7 @@ export default Module({
     peers: [
       {
         initialPauseRate: 123,
+        processingPower: 1, // relative power compared to peers
         wallet: {
           balance: 0,
           key: {

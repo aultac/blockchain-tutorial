@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import numeral from 'numeral';
 
 import { connect } from '@cerebral/react';
 import { state,signal } from 'cerebral/tags';
@@ -8,6 +9,7 @@ import          AddIcon from '@material-ui/icons/Add';
 import           Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import           Switch from '@material-ui/core/Switch';
+import        TextField from '@material-ui/core/TextField';
 
 import HashBlock from './HashBlock'
 
@@ -19,10 +21,11 @@ export default connect({
    showreward: state`showreward`,
      showrace: state`showrace`,
     showcheat: state`showcheat`,
-           addBlock: signal`addBlock`,
-        publishNode: signal`publishNode`,
-   togglePeerMining: signal`togglePeerMining`,
-  setPeerIsCheating: signal`setPeerIsCheating`,
+               addBlock: signal`addBlock`,
+            publishNode: signal`publishNode`,
+       togglePeerMining: signal`togglePeerMining`,
+      setPeerIsCheating: signal`setPeerIsCheating`,
+  updateProcessingPower: signal`updateProcessingPower`,
 }, class Peer extends React.Component {
 
   componentWillMount() {
@@ -53,7 +56,8 @@ export default connect({
     const numblocks = (props.showwork || props.showrace) 
                       ? (lengthOfValidChain < 0 ? peer.blocks.length : lengthOfValidChain) // if nothing incorrect was found, entire chain is valid
                       : peer.blocks.length; // if not racing or manual work, length is just number of blocks
-  
+    const totalProcessingPower = _.reduce(props.peers, (sum,p) => sum + p.processingPower, 0);
+
     return (
       <div className='peernode'>
         <div className='peernode-topbar'>
@@ -83,6 +87,16 @@ export default connect({
                control={<Switch checked={!!peer.isCheating} onChange={evt => props.setPeerIsCheating({ peerindex, checked: evt.target.checked})} />}
                label='Cheat'
              />
+           : ''
+          }
+          {  props.showcheat && peer.isCheating
+           ? <div>
+               <TextField type='number' value={peer.processingPower} 
+                 label='Proc. Power'
+                 onChange={evt => props.updateProcessingPower({ value: evt.target.value, peerindex})}
+               />
+               / {totalProcessingPower} ({numeral(peer.processingPower/totalProcessingPower).format('0%')})
+             </div>
            : ''
           }
             

@@ -1,13 +1,14 @@
 import uuid from 'uuid';
 
-const shortUUID = () => uuid.v4().replace('-').substr(0,6);
+const shortUUID = () => uuid.v4().replace(/-/g,'').substr(0,5);
+const mediumUUID = () => uuid.v4().replace(/-/g,'').substr(0,20);
 
 const sites = [
   'produce.com',
-  'peachesRus.com',
-  'freshfruit.com',
+  'peaches.com',
+  'fruit.com',
   'treefruit.com',
-  'berriesAndMore.com',
+  'berries.com',
 ];
 
 const products = [
@@ -31,6 +32,7 @@ const randomLabel = () => {
   return 'GTIN: ' + Math.floor(Math.random() * 100000000)                 + '\n'
         +'CountryOfOrigin: '+randomItem(countries)                        + '\n'
         +'Product: '+ randomItem(products)                                + '\n'
-        +'trellis://'+ randomItem(sites)+'/resources/'+shortUUID();
+        +'trellis://'+ randomItem(sites)+'/resources/'+shortUUID()        + '\n'
+        +'trellis-hash: '+mediumUUID();
 }
 export default randomLabel;

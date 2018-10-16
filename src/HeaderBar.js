@@ -32,6 +32,12 @@ export default connect({
       toggleCheat: signal`toggleCheat`,
 }, props => 
   <div className="header-bar">
+
+    <div className="header-bar-logo-container">
+      <a href="https://oatscenter.org">
+        <img className="header-bar-logo" src="logo-oats-small.png" />
+      </a>
+    </div>
     <div># Hashing and Blockchain Tutorial</div>
 
     <div style={{flexGrow: '1'}}></div>

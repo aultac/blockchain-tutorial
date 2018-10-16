@@ -26,4 +26,13 @@ body {
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-logo {
+  max-height: 75px;
+  max-width: 200px;
 }

@@ -6,6 +6,17 @@
   color: white;
   font-size: 1.5em;
   font-family: 'Roboto', sans-serif;
+  align-items: center;
+}
+
+.header-bar-logo {
+  max-height: 25px;
+  padding-right: 5px;
+}
+.header-bar-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-button {
